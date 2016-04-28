@@ -58,7 +58,12 @@ angular.module('starter.controllers', [])
   }
 
 })
+.controller('settingsCtrl', function($scope, Customer) {
+  $scope.data = {id: window.localStorage['userID']}
+  $scope.customer = Customer.get({id: window.localStorage['userID']});
+  $scope.update_customer = function(){Customer.update($scope.data)}
 
+})
 .controller('oneRestCtrl', function($scope, Merchant) {
   Merchant.get({id: 3}).$promise.then(function(response){
     $scope.selectedMerchant = response;

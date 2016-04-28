@@ -1,0 +1,41 @@
+<ion-view name="login-view">
+  <ion-content>
+    <div class="list">
+      <form stripe-form="stripeCallback" name="checkoutForm">
+      <label class="item item-input item-label">
+        <span class="input-label">First Name</span>
+        <input type="text" placeholder="{{customer.first_name}}" ng-model="data.first_name">
+      </label>
+      <label class="item item-input item-label">
+        <span class="input-label">Last Name</span>
+        <input type="text" placeholder="{{customer.last_name}}" ng-model="data.last_name">
+      </label>
+      <label class="item item-input item-label">
+        <span class="input-label">Email</span>
+        <input type="email" placeholder="{{customer.email}}" ng-model="data.email">
+        <br>
+      </label>
+      <div>
+        <br>
+      <button class="button button-positive center" ng-click="update_customer()">Update</button>
+    </div>
+
+  </form>
+</div>
+
+    <div class="padding">
+      <label class="item item-input item-label">
+        <span class="input-label">Primary Card</span> XXXX-4242
+
+
+      </label>
+      <button class="button button-assertive center">Delete</button>
+
+      <label class="item item-input item-label">
+        <span class="input-label">Add Credit Card</span>
+        <input type="text" placeholder="" ng-model="data.credit_card">
+      </label>
+      <button class="button button-positive center">Add</button>
+    </div>
+  </ion-content>
+</ion-view>

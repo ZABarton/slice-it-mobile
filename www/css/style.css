@@ -8,3 +8,10 @@
 {
     display: block;
 }
+
+.center {
+  display: relative;
+  margin-left: 74%;
+}
+
+

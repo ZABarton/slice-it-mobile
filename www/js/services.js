@@ -12,6 +12,10 @@ angular.module('starter.services', [])
   return $resource("http://localhost:3000/bills/:id.json")
 })
 
+.factory('Customer', function($resource){
+  return $resource("http://localhost:3000/customers/:id.json",{id: "@id"},{ update: {method: 'PUT'}})
+})
+
 .factory('UserSession', function($resource){
   return $resource("http://localhost:3000/customers/sign_in.json");
 })
