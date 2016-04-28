@@ -22,20 +22,19 @@
 
         <ion-list ng-controller="ListCtrl" show-delete="shouldShowDelete" show-reorder="shouldShowReorder" can-swipe="listCanSwipe">
             <ion-item ng-repeat="transaction in bill.transaction_array">
-                <h2>{{transaction[0]}}</h2> Total Paid: {{transaction[1]  | currency}} Total Owed: {{transaction[3]*(1+data.tip/100) | currency}}
-                Total Remaining: {{transaction[3]*(1+data.tip/100) - transaction[1] | currency}}
+                <h3>{{transaction[0]}}</h3><h4>Total Paid: {{transaction[1]/100 | currency}} Total Owed: {{transaction[3]*(1+data.tip/100) | currency}}</h4>
                 <ion-option-button class="button-positive" ng-click="edit(transaction)">Edit</ion-option-button>
                 <ion-option-button class="button-assertive" ng-click="deleteTrans(bill.id, transaction[2])">Delete</ion-option-button>
-                <ion-option-button class="button button-positive" ng-controller="PopupCtrl" ng-click="chargePopup(bill.id,{{transaction[3]*(1+data.tip/100) - transaction[1]}})" ng-show="{{transaction[4]==currentUserID}}">Settle Your Bill</button>
+                <ion-option-button class="button button-positive" ng-controller="PopupCtrl" ng-click="chargePopup(bill.id,{{(transaction[3] - transaction[1])}},transaction[2])" ng-show="{{transaction[4]==currentUserID}}">Settle Your Bill</button>
             </ion-item>
 
-            <ion-list ng-controller="guestList" show-delete="shouldShowDelete" show-reorder="shouldShowReorder" can-swipe="listCanSwipe">
+<!--             <ion-list ng-controller="guestList" show-delete="shouldShowDelete" show-reorder="shouldShowReorder" can-swipe="listCanSwipe">
                 <ion-item ng-repeat="guest in guestArray">
                     <h2>{{guest.username}}</h2> Total Paid: $0.00 Total Owed: $0.00
                     <ion-option-button class="button-positive" ng-click="edit(transaction)">Edit</ion-option-button>
                     <ion-option-button class="button-assertive" ng-click="deleteGuest(guest)">Delete</ion-option-button>
                 </ion-item>
-            </ion-list>
+            </ion-list> -->
 
         </ion-list>
 

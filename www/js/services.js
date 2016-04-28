@@ -31,6 +31,10 @@ angular.module('starter.services', [])
   return $resource("http://localhost:3000/bills/:bill_id/transactions",{id: "@id", username: "@username", bill_id: "@bill_id"})
 })
 
+.factory('Transaction', function($resource){
+  return $resource("http://localhost:3000/bills/:bill_id/transactions/:id.json",{id: "@id", bill_id: 1})
+})
+
 .factory('PayUp', function($resource){
   return $resource("http://localhost:3000/bills/:bill_id/transactions/:id",{id: "@id", username: "@username", bill_id: "@bill_id", amount: "@amount"},{ update: {method: 'PUT'}})
 })

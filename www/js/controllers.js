@@ -17,7 +17,20 @@ angular.module('starter.controllers', [])
     }
 })
 
-.controller('BillCtrl', function($scope, $stateParams, Bill, PayUp, AssignItem, $http) {
+.controller('paidCtrl', function($scope, $stateParams, Transaction) {
+    $scope.transaction = Transaction.get($stateParams)
+    console.log($scope.transaction)
+    $scope.tip = function(amount, total) {return Math.ceil(parseFloat(amount)/(parseFloat(total))*100-100)}
+    $scope.textPrice = function(price, amount, total){return ((price/100) * (amount/total))}
+    $scope.parseFloat = parseFloat
+    $scope.parseInt = parseInt
+
+    $scope.doRefresh = function() {
+    $scope.$broadcast('scroll.refreshComplete')
+  }
+})
+
+.controller('BillCtrl', function($scope, $location, $stateParams, $ionicPopup, Bill, PayUp, AssignItem, $http) {
   $scope.data = {tip: 18}
   if (Object.keys($stateParams).length != 0 && JSON.stringify($stateParams) != JSON.stringify({})) {
    $scope.bill = Bill.get($stateParams);
@@ -37,6 +50,27 @@ angular.module('starter.controllers', [])
     $scope.bill = Bill.get($stateParams)
     $scope.$broadcast('scroll.refreshComplete')
   }
+  $scope.chargePopup = function(billID, amount,transactionID) {
+     $scope.data.amount=amount
+
+     // An elaborate, custom popup
+     var myPopup = $ionicPopup.show({
+       template: '<div>{{((data.amount)*(1+data.tip/100))  | currency}} Tip: {{data.tip}}%</div>',
+       title: "Confirm Charge",
+       scope: $scope,
+       buttons: [
+         { text: 'Cancel' },
+         {
+           text: 'Confirm Charge',
+           type: 'button-positive',
+           onTap: function(e) {
+               PayUp.update({user_id: window.localStorage['userID'], bill_id: billID, amount: parseInt((1+$scope.data.tip/100)*amount*100), id:1});
+               $location.path('app/paid/'+transactionID);
+           }
+         },
+       ]
+     });
+    };
 })
 
 .controller('ListCtrl', function($scope){
@@ -45,17 +79,17 @@ angular.module('starter.controllers', [])
   $scope.listCanSwipe = true;
 })
 
-.controller("guestList", function($scope) {
-  if (window.localStorage["guestArray"]) {
-    var guestArray = JSON.parse(window.localStorage["guestArray"]);
-    $scope.guestArray = guestArray;
-    $scope.deleteGuest = function(guest){
-      var filteredArray = guestArray.filter(function (arrGuest) {
-        return arrGuest.username != guest.username
-      });
-      window.localStorage["guestArray"] = JSON.stringify(filteredArray);
-    };
-  }
+// .controller("guestList", function($scope) {
+//   if (window.localStorage["guestArray"]) {
+//     var guestArray = JSON.parse(window.localStorage["guestArray"]);
+//     $scope.guestArray = guestArray;
+//     $scope.deleteGuest = function(guest){
+//       var filteredArray = guestArray.filter(function (arrGuest) {
+//         return arrGuest.username != guest.username
+//       });
+//       window.localStorage["guestArray"] = JSON.stringify(filteredArray);
+//     };
+//   }
 
 })
 .controller('settingsCtrl', function($scope, Customer) {
@@ -64,19 +98,7 @@ angular.module('starter.controllers', [])
   $scope.update_customer = function(){Customer.update($scope.data)}
 
 })
-.controller('oneRestCtrl', function($scope, Merchant) {
-  Merchant.get({id: 3}).$promise.then(function(response){
-    $scope.selectedMerchant = response;
-  });
-})
 
-// .controller('checkInCtrl', function($scope, Seating) {
-//   $scope.click = function() {
-//     var selected_seating = new Seating({merchant: })
-
-
-//   }
-// })
 
   // With the new view caching in Ionic, Controllers are only called
 .controller('AppCtrl', function($scope, $ionicModal, $timeout) {
@@ -189,27 +211,6 @@ angular.module('starter.controllers', [])
 
 .controller('PopupCtrl',function($scope, $ionicPopup, $filter, AddTransaction, PayUp,AssignItem) {
 
-   $scope.chargePopup = function(billID, amount) {
-   $scope.data = {}
-
-   // An elaborate, custom popup
-   var myPopup = $ionicPopup.show({
-     title: "Confirm Charge of "+$filter('currency')(amount,"$",2),
-     scope: $scope,
-     buttons: [
-       { text: 'Cancel' },
-       {
-         text: 'Confirm Charge',
-         type: 'button-positive',
-         onTap: function(e) {
-             PayUp.update({user_id: window.localStorage['userID'], bill_id: billID, amount: amount, id:1})
-             location.reload();
-         }
-       },
-     ]
-   });
-  };
-
   $scope.showPopup = function(billID) {
     $scope.data = {}
 
@@ -229,39 +230,39 @@ angular.module('starter.controllers', [])
             AddTransaction.save({email: $scope.data.email,bill_id: billID})
           }
         },
-        { text: 'Add Guest',
-          type: 'button-full button-balanced',
-          onTap: function(e) {
-            $scope.guestData = {}
-            var newGuestPopup = $ionicPopup.show({
-              template: '<div class="list"><label class="item item-input item-stacked-label"><span class="input-label">Guest Name</span><input type="text" name="username" placeholder="Guest Name" ng-model="guestData.name"></label><label class="item item-input item-stacked-label"><span class="input-label">Email</span><input type="email" name="email" placeholder="guest@example.com" ng-model="guestData.email"></label></div>',
-              title: "Create a new Guest User?",
-              scope: $scope,
-              buttons: [
-                { text: 'I do not want',
-                  type: 'button-assertive' },
-                { text: '<b>Create Guest</b>',
-                  type: 'button-positive',
-                  onTap: function(e) {
-                    var newGuest = new Guest($scope.guestData.name, $scope.guestData.email, billID);
-                    newGuest.findPrimaryId();
-                    var holder = []
-                    if (window.localStorage["guestArray"]) {
-                      holder = JSON.parse(window.localStorage["guestArray"]);
-                      holder.push(newGuest);
-                      window.localStorage["guestArray"] = JSON.stringify(holder)
-                    }
-                    else {
-                      holder.push(newGuest);
-                      window.localStorage["guestArray"] = JSON.stringify(holder)
-                    }
-                    location.reload();
-                  }
-                }
-              ]
-            });
-          }
-        }
+        // { text: 'Add Guest',
+        //   type: 'button-full button-balanced',
+        //   onTap: function(e) {
+        //     $scope.guestData = {}
+        //     var newGuestPopup = $ionicPopup.show({
+        //       template: '<div class="list"><label class="item item-input item-stacked-label"><span class="input-label">Guest Name</span><input type="text" name="username" placeholder="Guest Name" ng-model="guestData.name"></label><label class="item item-input item-stacked-label"><span class="input-label">Email</span><input type="email" name="email" placeholder="guest@example.com" ng-model="guestData.email"></label></div>',
+        //       title: "Create a new Guest User?",
+        //       scope: $scope,
+        //       buttons: [
+        //         { text: 'I do not want',
+        //           type: 'button-assertive' },
+        //         { text: '<b>Create Guest</b>',
+        //           type: 'button-positive',
+        //           onTap: function(e) {
+        //             var newGuest = new Guest($scope.guestData.name, $scope.guestData.email, billID);
+        //             newGuest.findPrimaryId();
+        //             var holder = []
+        //             if (window.localStorage["guestArray"]) {
+        //               holder = JSON.parse(window.localStorage["guestArray"]);
+        //               holder.push(newGuest);
+        //               window.localStorage["guestArray"] = JSON.stringify(holder)
+        //             }
+        //             else {
+        //               holder.push(newGuest);
+        //               window.localStorage["guestArray"] = JSON.stringify(holder)
+        //             }
+        //             location.reload();
+        //           }
+        //         }
+        //       ]
+        //     });
+        //   }
+        // }
       ]
     });
   };
@@ -288,6 +289,29 @@ angular.module('starter.controllers', [])
    });
   };
 
-
+  $scope.guestPopup = function(price, amount, total) {
+    $scope.data = {}
+    var myPopup = $ionicPopup.show({
+      template: '<label class="item item-input item-stacked-label">Phone Number<span class="input-label"></span><input type="tel" ng-model="data.phone"></label>',
+      title: "Text a Payment Reminder to your Friend",
+      scope: $scope,
+      buttons: [
+        { text: 'Never Mind',
+          type: 'button-assertive' },
+        { text: '<b>Send Text</b>',
+          type: 'button-positive',
+          onTap: function(e) {
+            var phone = $scope.data.phone
+            var textAmount = $scope.textPrice(price, amount, total)
+            $.ajax({
+              method: 'POST',
+              url: 'http://localhost:3000/notify.json',
+              data: {phone: phone, price: textAmount}
+            });
+          }
+        }
+      ]
+    });
+  };
 
 });
