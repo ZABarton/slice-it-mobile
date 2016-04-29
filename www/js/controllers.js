@@ -5,6 +5,8 @@ angular.module('starter.controllers', [])
   Merchant.query().$promise.then(function(response){
     console.log(response);
     $scope.merchants = response;
+    $scope.lol = true
+    $scope.yo = function(){$scope.lol = !$scope.lol}
   });
     $scope.id = parseInt(window.localStorage['userID'])
     $scope.first_name = window.localStorage['first_name']

@@ -4,15 +4,16 @@
             pulling-text="Pull to Refresh your Check-Ins"
             on-refresh="doRefresh()">
         </ion-refresher>
-        <ion-list>
+        <ion-list class="gray">
           <ion-item class="list item-dark item-icon-left" ng-click="selectMerchant(merchant)" ng-href="#/app/bills">
             <div class = "item-text-wrap "><b>You've eaten pizza every day this week! Wow!</b></div>
             <i class="icon ion-pizza"></i>
           </ion-item>
-          <ion-item class="item-dark less-padding"> <h2><b>Restaurants near {{first_name}}</b></h2> </ion-item>
+          <ion-item class="item-dark item-icon-right less-padding" ng-click="yo()"> <h2><b>Restaurants near {{first_name}}</b><i class="icon ion-ios-arrow-down" ng-show="lol"></i><i class="icon ion-ios-arrow-up" ng-show="!lol"></i></h2> </ion-item>
+
           <ion-item class="item gray">
 
-            <ion-item class="list item-dark item-icon-left less-margin" ng-repeat="merchant in merchants" ng-click="selectMerchant(merchant)" ng-href="#/app/bills">
+            <ion-item class="gray list item-dark item-icon-left less-margin" ng-repeat="merchant in merchants" ng-click="selectMerchant(merchant)" ng-href="#/app/bills" ng-show="lol">
               <!-- <i class="icon ion-fork"></i> -->
               <div>{{merchant.business_name}}</div>
               <div ng-show="hello(merchant)">
